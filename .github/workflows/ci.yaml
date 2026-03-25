@@ -37,6 +37,7 @@ jobs:
     #- name: <NAME OF STEP>
     - name: install dependencies
       run: |
+          echo 'install dependencies'
           python -m pip install --upgrade pip
           pip install -r requirements.txt
     # TODO-STEP 3c: Add commands to install dependencies
@@ -71,6 +72,7 @@ jobs:
     #    pip install -r requirements.txt
     - name : Install dependencies
       run: |
+        echo 'install'
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
