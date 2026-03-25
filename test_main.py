@@ -1,58 +1,66 @@
 import unittest
-from main import calculate_multi, calculate_sub, calculate_sum_and_average, get_numbers_from_user
-
-class TestCalculateFunctions(unittest.TestCase):
-
-    def test_valid_numbers(self):
-        self.assertEqual(calculate_sum_and_average([1, 2, 3]), (6, 2.0))
-
-    def test_empty_list(self):
-        with self.assertRaises(ValueError) as context:
-            calculate_sum_and_average([])
-        self.assertEqual(str(context.exception), "Dãy số không được rỗng nha.")
-
-    def test_negative_numbers(self):
-        with self.assertRaises(ValueError):
-            calculate_sum_and_average([1, -2, 3])
-
-    def test_non_numeric_input(self):
-        with self.assertRaises(ValueError):
-            calculate_sum_and_average(["a", "b", "c"])
+import json
+from app import app
 
 
-    # Write unitest for calculate_sub function
-    def test_calculate_sub_valid_numbers(self):
-        self.assertEqual(calculate_sub([10, 2, 3]), 5)
+class TestApp(unittest.TestCase):
+    def setUp(self):
+        self.client = app.test_client()
 
-    def test_calculate_sub_empty_list(self):
-        with self.assertRaises(ValueError) as context:
-            calculate_sub([])
-        self.assertEqual(str(context.exception), "Dãy số không được rỗng nha.")
+    def test_hello_endpoint(self):
+        response = self.client.get('/api/test')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {"message": "Hello World!"})
 
-    def test_calculate_sub_negative_numbers(self):
-        with self.assertRaises(ValueError):
-            calculate_sub([1, -2, 3])
+    def test_add_endpoint(self):
+        payload = json.dumps({
+            "number_1": 5,
+            "number_2": 3
+        })
+        response = self.client.post('/api/add',
+                                    data=payload,
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {"result": 8})
 
-    def test_calculate_sub_non_numeric_input(self):
-        with self.assertRaises(ValueError):
-            calculate_sub(["a", "b", "c"])
+    def test_add_invalid_input(self):
+        payload = json.dumps({
+            "number_1": 5
+        })
+        response = self.client.post('/api/add',
+                                    data=payload,
+                                    content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, {"error": "Invalid input"})
 
-    # Write unit-test for calculate_multi function
-    def test_calculate_multi_valid_numbers(self):
-        self.assertEqual(calculate_multi([2, 3, 4]), 24)
+    # Optional: Tests for additional operations
+    # Uncomment and complete these tests if you implement
+    # the below routes
 
-    def test_calculate_multi_empty_list(self):
-        with self.assertRaises(ValueError) as context:
-            calculate_multi([])
-        self.assertEqual(str(context.exception), "Dãy số không được rỗng nha.")
+    # def test_multiply_endpoint(self):
+    #     # Prepare test data
+    #     payload = json.dumps({
+    #         "number_1": 4,
+    #         "number_2": 5
+    #     })
+    #
+    #     # TODO: Get Response from API endpoint '/api/multiply'
+    #     # response = self.client.post('/api/multiply', data=payload,
+    #     #                             content_type='application/json')
+    #
+    #     # TODO: Assert equals if API response is OK (200)
+    #     # self.assertEqual(response.status_code, 200)
+    #
+    #     # TODO: Assert equals if API response 'result' is 20 (4 * 5)
+    #     # self.assertEqual(response.json, {"result": 20})
 
-    def test_calculate_multi_negative_numbers(self):
-        with self.assertRaises(ValueError):
-            calculate_multi([1, -2, 3])
+    # def test_subtract_endpoint(self):
+    #     # Write test code here
 
-    def test_calculate_multi_non_numeric_input(self):
-        with self.assertRaises(ValueError):
-            calculate_multi(["a", "b", "c"])
+    # def test_divide_endpoint(self):
+    #     # Write test code here
+
+    # Add more tests for any additional routes created
 
 
 if __name__ == '__main__':
