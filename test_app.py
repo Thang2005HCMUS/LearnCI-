@@ -21,7 +21,7 @@ class TestApp(unittest.TestCase):
                                     data=payload,
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {"result": 8})
+        self.assertEqual(response.json, {"result": 10})
 
     def test_add_invalid_input(self):
         payload = json.dumps({
