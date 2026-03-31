@@ -81,6 +81,6 @@ jobs:
     #- name: Run tests
     #  run: pytest
     - name: Run tests
-      run: pytest || Exit 0
+      run: pytest || exit 0
 
 # Remember to remove the '#' to uncomment lines when filling in the placeholders
