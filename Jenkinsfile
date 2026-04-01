@@ -55,7 +55,7 @@ pipeline {
         always {
             echo 'Hoàn thành quy trình CI.'
             // (Tùy chọn) Dọn dẹp môi trường nếu muốn tiết kiệm dung lượng container
-            // sh 'rm -rf venv' 
+            sh 'rm -rf venv' 
         }
         success {
             echo 'Tuyệt vời! Build và Test đều thành công.'
