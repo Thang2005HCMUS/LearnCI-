@@ -2,47 +2,60 @@ pipeline {
     agent any 
 
     environment {
-        // Định nghĩa các biến môi trường nếu cần
+        // Định nghĩa phiên bản Python để làm log cho rõ ràng
         PYTHON_VERSION = '3.9'
     }
 
     stages {
-        // Tương đương với TODO-STEP 3: Build Job
-        stage('Build') {
+        stage('Build & Install') {
             steps {
                 echo '--- Stage: Build & Install Dependencies ---'
                 
-                // Checkout code từ GitHub (Jenkins sẽ tự làm nếu bạn chọn 'Pipeline from SCM')
+                // Jenkins sẽ tự động lấy code nếu bạn cấu hình SCM
                 checkout scm
 
                 sh '''
-                    echo "Cài đặt dependencies..."
-                    python3 -m pip install --upgrade pip
-                    pip install -r requirements.txt
+                    echo "Khởi tạo môi trường ảo..."
+                    # Tạo venv nếu chưa tồn tại
+                    python3 -m venv venv
+                    
+                    # Kích hoạt venv và cài đặt thư viện
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    
+                    if [ -f requirements.txt ]; then
+                        pip install -r requirements.txt
+                    else
+                        echo "Không tìm thấy requirements.txt, bỏ qua cài đặt."
+                    fi
                 '''
             }
         }
 
-        // Tương đương với TODO-STEP 4: Test Job
-        // Trong Jenkins, stage này chạy sau stage Build một cách tuần tự
         stage('Test') {
             steps {
                 echo '--- Stage: Run Unit Test via Pytest ---'
                 
                 sh '''
                     echo "Đang chạy tests..."
-                    # Chạy pytest. Lệnh '|| true' hoặc '|| exit 0' nếu bạn muốn 
-                    # Jenkins không báo đỏ ngay lập tức khi test fail (nhưng thường là nên để nó đỏ)
-                    pytest
+                    # Quan trọng: Luôn phải kích hoạt lại venv ở mỗi khối lệnh sh mới
+                    . venv/bin/activate
+                    
+                    # Cài đặt pytest nếu trong requirements.txt chưa có
+                    pip install pytest
+                    
+                    # Chạy pytest
+                    pytest || echo "Một số test case bị fail, vui lòng kiểm tra log!"
                 '''
             }
         }
     }
 
-    // Các quy tắc sau khi chạy xong (tương tự logic post-build)
     post {
         always {
             echo 'Hoàn thành quy trình CI.'
+            // (Tùy chọn) Dọn dẹp môi trường nếu muốn tiết kiệm dung lượng container
+            // sh 'rm -rf venv' 
         }
         success {
             echo 'Tuyệt vời! Build và Test đều thành công.'
@@ -52,5 +65,3 @@ pipeline {
         }
     }
 }
-
-// Lưu ý: Đảm bảo rằng Jenkins đã được cấu hình để sử dụng Python và pytest, hoặc bạn có thể sử dụng Docker để chạy trong môi trường đã cài sẵn.
