@@ -1,5 +1,5 @@
 pipeline {
-    agent any // Hoặc dùng 'agent { docker { image 'python:3.9' } }' nếu bạn muốn chạy trong container riêng
+    agent { docker { image 'python:3.9' } }// Hoặc dùng 'agent { docker { image 'python:3.9' } }' nếu bạn muốn chạy trong container riêng
 
     environment {
         // Định nghĩa các biến môi trường nếu cần
