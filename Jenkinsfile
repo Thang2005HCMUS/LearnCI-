@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-        docker {
-            image 'python:3.9-slim' // Jenkins sẽ tự tải image này về để chạy
-        }
-    }// Hoặc dùng 'agent { docker { image 'python:3.9' } }' nếu bạn muốn chạy trong container riêng
+    agent any 
 
     environment {
         // Định nghĩa các biến môi trường nếu cần
